@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -17,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { CameraModal } from './camera-modal';
 import { askAiChatbot } from '@/ai/flows/ask-ai-chatbot';
+import { SparklesIcon } from '@heroicons/react/24/outline';
 
 type ChatViewProps = {
   chatId: string;
@@ -30,10 +32,19 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const session = localStorage.getItem('ciphersphere-session');
+    if (session) {
+      const parsedSession = JSON.parse(session);
+      setCurrentUser(parsedSession.user.name);
+    }
+  }, []);
 
   const scrollToBottom = () => {
     scrollAreaRef.current?.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
@@ -53,10 +64,10 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
   };
 
   const handleSend = async () => {
-    if (input.trim() === '' || isAiThinking) return;
+    if (input.trim() === '' || isAiThinking || !currentUser) return;
     const userInput = input;
     setInput('');
-    addMessage({ author: 'user', type: 'text', content: userInput });
+    addMessage({ author: currentUser, type: 'text', content: userInput });
 
     if (chatType === 'ai') {
       setIsAiThinking(true);
@@ -74,11 +85,11 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file && file.type.startsWith('image/') && currentUser) {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          addMessage({ author: 'user', type: 'image', content: event.target.result as string });
+          addMessage({ author: currentUser, type: 'image', content: event.target.result as string });
         }
       };
       reader.readAsDataURL(file);
@@ -95,7 +106,9 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
       mediaRecorderRef.current.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const audioUrl = URL.createObjectURL(audioBlob);
-        addMessage({ author: 'user', type: 'audio', content: audioUrl });
+        if (currentUser) {
+            addMessage({ author: currentUser, type: 'audio', content: audioUrl });
+        }
         audioChunksRef.current = [];
         stream.getTracks().forEach(track => track.stop());
       };
@@ -113,6 +126,12 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
     }
   };
 
+  const handleCapture = (dataUrl: string) => {
+    if (currentUser) {
+      addMessage({ author: currentUser, type: 'image', content: dataUrl });
+    }
+  }
+
   return (
     <div className="flex flex-col h-screen bg-slate-950">
       <header className="flex-shrink-0 h-20 flex items-center px-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg">
@@ -121,7 +140,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
       
       <div ref={scrollAreaRef} className="flex-1 overflow-y-auto p-8 space-y-6">
         {messages.map((msg) => (
-          <Message key={msg.id} message={msg} />
+          <Message key={msg.id} message={msg} currentUser={currentUser} />
         ))}
         {isAiThinking && (
            <div className="flex items-end gap-3 justify-start">
@@ -188,7 +207,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
         </div>
       </footer>
 
-      <CameraModal isOpen={isCameraOpen} onClose={() => setIsCameraOpen(false)} onCapture={(dataUrl) => addMessage({ author: 'user', type: 'image', content: dataUrl })} />
+      <CameraModal isOpen={isCameraOpen} onClose={() => setIsCameraOpen(false)} onCapture={handleCapture} />
     </div>
   );
 }

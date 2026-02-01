@@ -1,3 +1,4 @@
+
 export interface User {
   email: string;
   name: string;
@@ -6,7 +7,7 @@ export interface User {
 
 export type Message = {
   id: string;
-  author: 'user' | 'peer' | 'ai';
+  author: string;
   type: 'text' | 'image' | 'audio';
   content: string;
   timestamp: number;

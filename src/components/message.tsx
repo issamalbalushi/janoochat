@@ -1,23 +1,21 @@
+
 'use client';
 
 import { Message as MessageType } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { UserCircleIcon, SparklesIcon, CpuChipIcon } from '@heroicons/react/24/solid';
+import { UserCircleIcon, SparklesIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 
-const AuthorAvatar = ({ author }: { author: MessageType['author'] }) => {
+const AuthorAvatar = ({ author }: { author: string }) => {
   const commonClasses = "h-8 w-8 rounded-full flex-shrink-0";
   if (author === 'ai') {
     return <SparklesIcon className={cn(commonClasses, "text-accent")} />;
   }
-  if (author === 'peer') {
-    return <UserCircleIcon className={cn(commonClasses, "text-slate-500")} />;
-  }
-  return null; // User avatar is implied and on the right
+  return <UserCircleIcon className={cn(commonClasses, "text-slate-500")} />;
 };
 
-export function Message({ message }: { message: MessageType }) {
-  const isUser = message.author === 'user';
+export function Message({ message, currentUser }: { message: MessageType, currentUser: string | null }) {
+  const isUser = message.author === currentUser;
 
   const renderContent = () => {
     switch (message.type) {
@@ -52,9 +50,12 @@ export function Message({ message }: { message: MessageType }) {
             : 'bg-slate-800 rounded-bl-lg text-slate-200'
         )}
       >
+        {!isUser && message.author !== 'ai' && (
+            <p className="text-xs font-bold mb-1 text-accent-foreground capitalize">{message.author}</p>
+        )}
         {renderContent()}
         <span className={cn(
-          "text-xs mt-2",
+          "text-xs mt-2 self-end",
           isUser ? 'text-indigo-200' : 'text-slate-400'
         )}>
           {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
