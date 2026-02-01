@@ -1,18 +1,20 @@
 'use client';
 
 import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { useState } from 'react';
 import { projectFiles } from '@/lib/project-files';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { ArrowDownTrayIcon, CodeBracketIcon } from '@heroicons/react/24/outline';
-import { Button } from './ui/button';
+import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 export function ExportButton() {
   const [isZipping, setIsZipping] = useState(false);
 
   const handleExport = async () => {
     setIsZipping(true);
+    
+    // Dynamically import file-saver to avoid SSR issues
+    const { saveAs } = await import('file-saver');
+
     const zip = new JSZip();
 
     Object.keys(projectFiles).forEach(path => {
