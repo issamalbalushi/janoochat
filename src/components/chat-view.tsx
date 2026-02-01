@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import useLocalStorage from '@/hooks/use-local-storage';
 import { Message as MessageType } from '@/lib/types';
 import { Message } from './message';
@@ -48,21 +48,41 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
     }
   }, []);
 
+  const addMessage = useCallback((message: Omit<MessageType, 'id' | 'timestamp' | 'read'>) => {
+    const newMessage: MessageType = {
+      id: Date.now().toString(),
+      timestamp: Date.now(),
+      read: false,
+      ...message,
+    };
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    return newMessage;
+  }, [setMessages]);
+
+  useEffect(() => {
+    if (chatType === 'human' && currentUser && messages.length > 0) {
+      let madeChanges = false;
+      const updatedMessages = messages.map(msg => {
+        if (msg.author !== currentUser && !msg.read) {
+          madeChanges = true;
+          return { ...msg, read: true };
+        }
+        return msg;
+      });
+
+      if (madeChanges) {
+        setMessages(updatedMessages);
+      }
+    }
+  }, [messages, chatType, currentUser, setMessages]);
+
+
   const scrollToBottom = () => {
     scrollAreaRef.current?.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
   };
 
   useEffect(scrollToBottom, [messages]);
 
-  const addMessage = (message: Omit<MessageType, 'id' | 'timestamp'>) => {
-    const newMessage: MessageType = {
-      id: Date.now().toString(),
-      timestamp: Date.now(),
-      ...message,
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-    return newMessage;
-  };
 
   const handleSend = async () => {
     if (input.trim() === '' || isAiThinking || !currentUser) return;
@@ -141,7 +161,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
       
       <div ref={scrollAreaRef} className="flex-1 overflow-y-auto p-8 space-y-6">
         {messages.map((msg) => (
-          <Message key={msg.id} message={msg} currentUser={currentUser} />
+          <Message key={msg.id} message={msg} currentUser={currentUser} chatType={chatType} />
         ))}
         {isAiThinking && (
            <div className="flex items-end gap-3 justify-start">

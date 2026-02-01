@@ -4,6 +4,7 @@
 import { Message as MessageType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { UserCircleIcon, SparklesIcon } from '@heroicons/react/24/solid';
+import { Check, CheckCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
@@ -48,7 +49,7 @@ const AuthorAvatar = ({ author, authorEmail }: { author: string; authorEmail?: s
   return <UserCircleIcon className={cn(commonClasses, "text-slate-500")} />;
 };
 
-export function Message({ message, currentUser }: { message: MessageType, currentUser: string | null }) {
+export function Message({ message, currentUser, chatType }: { message: MessageType, currentUser: string | null, chatType: 'human' | 'ai' }) {
   const isUser = message.author === currentUser;
 
   const renderContent = () => {
@@ -88,12 +89,21 @@ export function Message({ message, currentUser }: { message: MessageType, curren
             <p className="text-xs font-bold mb-1 text-accent-foreground capitalize">{message.author}</p>
         )}
         {renderContent()}
-        <span className={cn(
-          "text-xs mt-2 self-end",
-          isUser ? 'text-indigo-200' : 'text-slate-400'
-        )}>
-          {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
+        <div className="flex items-center self-end mt-2 gap-1">
+          <span className={cn(
+            "text-xs",
+            isUser ? 'text-indigo-200' : 'text-slate-400'
+          )}>
+            {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
+          {isUser && chatType === 'human' && (
+             message.read ? (
+              <CheckCheck size={16} className="text-sky-400" />
+            ) : (
+              <Check size={16} className="text-indigo-200" />
+            )
+          )}
+        </div>
       </div>
     </div>
   );

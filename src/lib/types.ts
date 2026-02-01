@@ -12,6 +12,7 @@ export type Message = {
   type: 'text' | 'image' | 'audio';
   content: string;
   timestamp: number;
+  read?: boolean;
 };
 
 export type Chat = {
