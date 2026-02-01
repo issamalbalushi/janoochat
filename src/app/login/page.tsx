@@ -21,8 +21,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
 
   const mockUsers = [
-    { email: 'sam@example.com', password: '12345', name: 'sam' },
-    { email: 'row@example.com', password: '12345', name: 'row' },
+    { email: 'sam@example.com', password: 'sam@1234', name: 'sam' },
+    { email: 'row@example.com', password: 'row@1234', name: 'row' },
   ];
 
   const handleLogin = (e: React.FormEvent) => {
@@ -114,7 +114,7 @@ export default function LoginPage() {
           </div>
         </div>
         <p className="text-center text-xs text-muted-foreground mt-8">
-          Use sam@example.com or row@example.com with password '12345'.
+          Use sam@example.com (pw: sam@1234) or row@example.com (pw: row@1234).
         </p>
       </div>
     </main>

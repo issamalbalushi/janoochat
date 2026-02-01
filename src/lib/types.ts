@@ -8,6 +8,7 @@ export interface User {
 export type Message = {
   id: string;
   author: string;
+  authorEmail?: string;
   type: 'text' | 'image' | 'audio';
   content: string;
   timestamp: number;

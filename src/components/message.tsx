@@ -5,12 +5,46 @@ import { Message as MessageType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { UserCircleIcon, SparklesIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
-const AuthorAvatar = ({ author }: { author: string }) => {
+const AuthorAvatar = ({ author, authorEmail }: { author: string; authorEmail?: string }) => {
   const commonClasses = "h-8 w-8 rounded-full flex-shrink-0";
+  const [profileImgSrc, setProfileImgSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    const readImage = () => {
+      if (authorEmail) {
+        const storedImage = window.localStorage.getItem(`ciphersphere-profile-pic-${authorEmail}`);
+        setProfileImgSrc(storedImage);
+      } else {
+        setProfileImgSrc(null);
+      }
+    };
+
+    readImage();
+
+    window.addEventListener('local-storage', readImage);
+    return () => {
+      window.removeEventListener('local-storage', readImage);
+    };
+  }, [authorEmail]);
+
   if (author === 'ai') {
     return <SparklesIcon className={cn(commonClasses, "text-accent")} />;
   }
+
+  if (profileImgSrc) {
+    return (
+      <Image
+        src={profileImgSrc}
+        alt={author}
+        width={32}
+        height={32}
+        className={cn(commonClasses, "object-cover")}
+      />
+    );
+  }
+
   return <UserCircleIcon className={cn(commonClasses, "text-slate-500")} />;
 };
 
@@ -41,7 +75,7 @@ export function Message({ message, currentUser }: { message: MessageType, curren
 
   return (
     <div className={cn('flex items-end gap-3', isUser ? 'justify-end' : 'justify-start')}>
-      {!isUser && <AuthorAvatar author={message.author} />}
+      {!isUser && <AuthorAvatar author={message.author} authorEmail={message.authorEmail} />}
       <div
         className={cn(
           'max-w-md lg:max-w-xl rounded-3xl p-4 flex flex-col',

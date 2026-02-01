@@ -33,6 +33,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -43,6 +44,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
     if (session) {
       const parsedSession = JSON.parse(session);
       setCurrentUser(parsedSession.user.name);
+      setCurrentUserEmail(parsedSession.user.email);
     }
   }, []);
 
@@ -66,7 +68,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
     if (input.trim() === '' || isAiThinking || !currentUser) return;
     const userInput = input;
     setInput('');
-    addMessage({ author: currentUser, type: 'text', content: userInput });
+    addMessage({ author: currentUser, authorEmail: currentUserEmail, type: 'text', content: userInput });
 
     if (chatType === 'ai') {
       setIsAiThinking(true);
@@ -88,7 +90,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          addMessage({ author: currentUser, type: 'image', content: event.target.result as string });
+          addMessage({ author: currentUser, authorEmail: currentUserEmail, type: 'image', content: event.target.result as string });
         }
       };
       reader.readAsDataURL(file);
@@ -106,7 +108,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const audioUrl = URL.createObjectURL(audioBlob);
         if (currentUser) {
-            addMessage({ author: currentUser, type: 'audio', content: audioUrl });
+            addMessage({ author: currentUser, authorEmail: currentUserEmail, type: 'audio', content: audioUrl });
         }
         audioChunksRef.current = [];
         stream.getTracks().forEach(track => track.stop());
@@ -127,7 +129,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
 
   const handleCapture = (dataUrl: string) => {
     if (currentUser) {
-      addMessage({ author: currentUser, type: 'image', content: dataUrl });
+      addMessage({ author: currentUser, authorEmail: currentUserEmail, type: 'image', content: dataUrl });
     }
   }
 

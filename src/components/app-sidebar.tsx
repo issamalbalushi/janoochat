@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   ChatBubbleLeftRightIcon,
@@ -10,7 +11,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { ExportButton } from './export-button';
 import { useEffect, useState } from 'react';
 
 const CipherSphereLogo = () => (
@@ -54,15 +54,42 @@ const NavItem = ({ href, icon: Icon, label }: { href: string; icon: React.Elemen
 export function AppSidebar() {
   const router = useRouter();
   const [username, setUsername] = useState('User');
+  const [profileImgSrc, setProfileImgSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    const session = localStorage.getItem('ciphersphere-session');
-    if (session) {
-      const parsedSession = JSON.parse(session);
-      setUsername(parsedSession.user.name || 'User');
+    const sessionStr = localStorage.getItem('ciphersphere-session');
+    if (sessionStr) {
+      const session = JSON.parse(sessionStr);
+      setUsername(session.user.name || 'User');
+      if (session.user.email) {
+        const storedImage = localStorage.getItem(`ciphersphere-profile-pic-${session.user.email}`);
+        if (storedImage) {
+          setProfileImgSrc(storedImage);
+        }
+      }
     }
   }, []);
 
+  const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const sessionStr = localStorage.getItem('ciphersphere-session');
+    if (file && sessionStr) {
+      const session = JSON.parse(sessionStr);
+      const email = session.user.email;
+      if (!email) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (typeof event.target?.result === 'string') {
+          const dataUrl = event.target.result;
+          localStorage.setItem(`ciphersphere-profile-pic-${email}`, dataUrl);
+          setProfileImgSrc(dataUrl);
+          window.dispatchEvent(new Event('local-storage'));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('ciphersphere-session');
@@ -81,15 +108,33 @@ export function AppSidebar() {
       </nav>
 
       <div className="mt-auto flex flex-col items-center gap-4">
-        <ExportButton />
-        
         <TooltipProvider delayDuration={0}>
           <Tooltip>
-            <TooltipTrigger className="cursor-default">
-              <UserCircleIcon className="h-10 w-10 text-slate-500" />
+            <TooltipTrigger asChild>
+              <label htmlFor="profile-upload" className="cursor-pointer rounded-full">
+                {profileImgSrc ? (
+                  <Image
+                    src={profileImgSrc}
+                    alt={username}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <UserCircleIcon className="h-10 w-10 text-slate-500" />
+                )}
+                <input
+                  id="profile-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleProfileImageUpload}
+                />
+              </label>
             </TooltipTrigger>
             <TooltipContent side="right" className="bg-slate-900 border-slate-700 text-foreground">
-              <p>{username}</p>
+              <p className="font-semibold">{username}</p>
+              <p className="text-xs text-muted-foreground">Click to change avatar</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
