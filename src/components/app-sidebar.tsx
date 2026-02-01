@@ -57,7 +57,7 @@ export function AppSidebar() {
   const [profileImgSrc, setProfileImgSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    const sessionStr = localStorage.getItem('ciphersphere-session');
+    const sessionStr = sessionStorage.getItem('ciphersphere-session');
     if (sessionStr) {
       const session = JSON.parse(sessionStr);
       setUsername(session.user.name || 'User');
@@ -72,7 +72,7 @@ export function AppSidebar() {
 
   const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    const sessionStr = localStorage.getItem('ciphersphere-session');
+    const sessionStr = sessionStorage.getItem('ciphersphere-session');
     if (file && sessionStr) {
       const session = JSON.parse(sessionStr);
       const email = session.user.email;
@@ -92,7 +92,7 @@ export function AppSidebar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('ciphersphere-session');
+    sessionStorage.removeItem('ciphersphere-session');
     router.push('/login');
   };
 

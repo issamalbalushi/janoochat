@@ -40,7 +40,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const session = localStorage.getItem('ciphersphere-session');
+    const session = sessionStorage.getItem('ciphersphere-session');
     if (session) {
       const parsedSession = JSON.parse(session);
       setCurrentUser(parsedSession.user.name);
