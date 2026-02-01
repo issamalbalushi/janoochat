@@ -12,7 +12,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setIsClient(true);
-    const session = sessionStorage.getItem('ciphersphere-session');
+    const session = localStorage.getItem('ciphersphere-session');
     if (session) {
       setIsAuthenticated(true);
     } else {
@@ -22,7 +22,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
 
   const logout = useCallback(() => {
-    sessionStorage.removeItem('ciphersphere-session');
+    localStorage.removeItem('ciphersphere-session');
     router.push('/login');
   }, [router]);
 

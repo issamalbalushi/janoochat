@@ -45,7 +45,7 @@ export default function LoginPage() {
           },
           isAuthenticated: true,
         };
-        sessionStorage.setItem('ciphersphere-session', JSON.stringify(session));
+        localStorage.setItem('ciphersphere-session', JSON.stringify(session));
         router.push('/general');
       } else {
         setError('Invalid email or password.');

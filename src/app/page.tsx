@@ -6,7 +6,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    const session = sessionStorage.getItem('ciphersphere-session');
+    const session = localStorage.getItem('ciphersphere-session');
     if (session) {
       router.replace('/general');
     } else {
