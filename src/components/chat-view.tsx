@@ -58,8 +58,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
       timestamp: Date.now(),
       ...message,
     };
-    const updatedMessages = [...messages, newMessage];
-    setMessages(updatedMessages);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
     return newMessage;
   };
 

@@ -1,54 +1,64 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
+function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+
+  const readValue = useCallback(() => {
+    // Prevent build error "window is not defined"
     if (typeof window === 'undefined') {
       return initialValue;
     }
+
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      return item ? (JSON.parse(item) as T) : initialValue;
     } catch (error) {
-      console.error(error);
+      console.warn(`Error reading localStorage key “${key}”:`, error);
       return initialValue;
     }
-  });
+  }, [initialValue, key]);
 
-  const setValue = (value: T) => {
+  // Set the value from localStorage on initial client-side render
+  useEffect(() => {
+    setStoredValue(readValue());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const setValue = (value: T | ((val: T) => T)) => {
+    // Prevent build error "window is not defined"
+    if (typeof window === 'undefined') {
+      console.warn(
+        `Tried setting localStorage key “${key}” even though environment is not a client`
+      );
+    }
+    
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      }
+      const newValue = value instanceof Function ? value(storedValue) : value;
+      window.localStorage.setItem(key, JSON.stringify(newValue));
+      setStoredValue(newValue);
+      // We dispatch a custom event so every useLocalStorage hook are notified
+      window.dispatchEvent(new Event("local-storage"));
     } catch (error) {
-      console.error(error);
+      console.warn(`Error setting localStorage key “${key}”:`, error);
     }
   };
-  
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === key) {
-        try {
-          if(e.newValue) {
-            setStoredValue(JSON.parse(e.newValue));
-          } else {
-            setStoredValue(initialValue);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
 
+  // Listen for changes to the value in other tabs
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setStoredValue(readValue());
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("local-storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("local-storage", handleStorageChange);
+    };
+  }, [readValue]);
 
   return [storedValue, setValue];
 }
