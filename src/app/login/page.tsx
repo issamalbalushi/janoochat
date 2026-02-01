@@ -18,23 +18,39 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [error, setError] = useState('');
+
+  const mockUsers = [
+    { email: 'sam@example.com', password: '12345', name: 'sam' },
+    { email: 'row@example.com', password: '12345', name: 'row' },
+  ];
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     if (!email || !password) return;
 
     setIsLoggingIn(true);
 
     setTimeout(() => {
-      const session = {
-        user: {
-          email,
-          name: email.split('@')[0] || 'User',
-        },
-        isAuthenticated: true,
-      };
-      localStorage.setItem('ciphersphere-session', JSON.stringify(session));
-      router.push('/general');
+      const user = mockUsers.find(
+        (u) => u.email === email && u.password === password
+      );
+
+      if (user) {
+        const session = {
+          user: {
+            email: user.email,
+            name: user.name,
+          },
+          isAuthenticated: true,
+        };
+        localStorage.setItem('ciphersphere-session', JSON.stringify(session));
+        router.push('/general');
+      } else {
+        setError('Invalid email or password.');
+        setIsLoggingIn(false);
+      }
     }, 1000);
   };
 
@@ -53,11 +69,12 @@ export default function LoginPage() {
             </div>
 
             <form onSubmit={handleLogin} className="space-y-6">
+              {error && <p className="text-center text-sm text-red-500">{error}</p>}
               <div className="relative">
                 <AtSymbolIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="email"
-                  placeholder="Email"
+                  placeholder="Email (e.g. sam@example.com)"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -97,7 +114,7 @@ export default function LoginPage() {
           </div>
         </div>
         <p className="text-center text-xs text-muted-foreground mt-8">
-          This is a mock login. Any email/password will work.
+          Use sam@example.com or row@example.com with password '12345'.
         </p>
       </div>
     </main>
