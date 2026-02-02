@@ -58,6 +58,10 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
     return newMessage;
   }, [setMessages]);
 
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages(prevMessages => prevMessages.filter(msg => msg.id !== messageId));
+  };
+
   useEffect(() => {
     if (chatType === 'human' && currentUser && messages.length > 0) {
       let madeChanges = false;
@@ -153,14 +157,14 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] bg-slate-950">
+    <div className="flex flex-col h-[calc(100vh-4rem-1px)] md:h-[calc(100vh-5rem-1px)] bg-slate-950">
       <header className="flex-shrink-0 h-10 flex items-center px-4 sm:px-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">{title}</h1>
       </header>
       
       <div ref={scrollAreaRef} className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-4 sm:space-y-6">
         {messages.map((msg) => (
-          <Message key={msg.id} message={msg} currentUser={currentUser} chatType={chatType} />
+          <Message key={msg.id} message={msg} currentUser={currentUser} chatType={chatType} onDelete={handleDeleteMessage} />
         ))}
         {isAiThinking && (
            <div className="flex items-end gap-3 justify-start">

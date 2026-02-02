@@ -3,7 +3,7 @@
 
 import { Message as MessageType } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { UserCircleIcon, SparklesIcon } from '@heroicons/react/24/solid';
+import { UserCircleIcon, SparklesIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { Check, CheckCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -49,7 +49,7 @@ const AuthorAvatar = ({ author, authorEmail }: { author: string; authorEmail?: s
   return <UserCircleIcon className={cn(commonClasses, "text-slate-500")} />;
 };
 
-export function Message({ message, currentUser, chatType }: { message: MessageType, currentUser: string | null, chatType: 'human' | 'ai' }) {
+export function Message({ message, currentUser, chatType, onDelete }: { message: MessageType, currentUser: string | null, chatType: 'human' | 'ai', onDelete: (id: string) => void }) {
   const isUser = message.author === currentUser;
 
   const renderContent = () => {
@@ -75,13 +75,24 @@ export function Message({ message, currentUser, chatType }: { message: MessageTy
   };
 
   return (
-    <div className={cn('flex items-end gap-3', isUser ? 'justify-end' : 'justify-start')}>
+    <div className={cn('group flex items-end gap-2', isUser ? 'justify-end' : 'justify-start')}>
       {!isUser && <AuthorAvatar author={message.author} authorEmail={message.authorEmail} />}
+      
+      {isUser && (
+        <button
+          onClick={() => onDelete(message.id)}
+          className="shrink-0 rounded-full p-1 text-slate-500 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500"
+          aria-label="Delete message"
+        >
+          <TrashIcon className="h-4 w-4" />
+        </button>
+      )}
+
       <div
         className={cn(
           'max-w-[80%] sm:max-w-md lg:max-w-xl rounded-3xl p-3 flex flex-col',
           isUser
-            ? 'bg-primary rounded-br-lg text-primary-foreground'
+            ? 'bg-primary rounded-br-lg text-primary-foreground order-last'
             : 'bg-slate-800 rounded-bl-lg text-slate-200'
         )}
       >
