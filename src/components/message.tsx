@@ -55,7 +55,7 @@ export function Message({ message, currentUser, chatType }: { message: MessageTy
   const renderContent = () => {
     switch (message.type) {
       case 'text':
-        return <p className="whitespace-pre-wrap">{message.content}</p>;
+        return <p className="whitespace-pre-wrap break-words">{message.content}</p>;
       case 'image':
         return (
           <Image
@@ -79,7 +79,7 @@ export function Message({ message, currentUser, chatType }: { message: MessageTy
       {!isUser && <AuthorAvatar author={message.author} authorEmail={message.authorEmail} />}
       <div
         className={cn(
-          'max-w-md lg:max-w-xl rounded-3xl p-4 flex flex-col',
+          'max-w-[80%] sm:max-w-md lg:max-w-xl rounded-3xl p-4 flex flex-col',
           isUser
             ? 'bg-primary rounded-br-lg text-primary-foreground'
             : 'bg-slate-800 rounded-bl-lg text-slate-200'

@@ -155,11 +155,11 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
 
   return (
     <div className="flex flex-col h-screen bg-slate-950">
-      <header className="flex-shrink-0 h-20 flex items-center px-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg">
-        <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+      <header className="flex-shrink-0 h-20 flex items-center px-4 sm:px-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">{title}</h1>
       </header>
       
-      <div ref={scrollAreaRef} className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div ref={scrollAreaRef} className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-4 sm:space-y-6">
         {messages.map((msg) => (
           <Message key={msg.id} message={msg} currentUser={currentUser} chatType={chatType} />
         ))}
@@ -176,11 +176,11 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
       </div>
 
       <footer className="flex-shrink-0 p-4 sm:p-6 bg-background border-t border-slate-800">
-        <div className="relative flex items-end gap-2">
+        <div className="relative flex items-end gap-1 sm:gap-2">
            <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full flex-shrink-0 hover:bg-primary/20">
-                <PaperClipIcon className="h-6 w-6 text-primary" />
+              <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-full flex-shrink-0 hover:bg-primary/20">
+                <PaperClipIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-2 bg-slate-800 border-slate-700">
@@ -207,23 +207,23 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
                 handleSend();
               }
             }}
-            placeholder="Type your message... (Shift+Enter for new line)"
-            className="flex-1 min-h-[48px] max-h-48 resize-none bg-slate-800 border-slate-700 rounded-2xl text-base px-4 py-3 focus:ring-primary"
+            placeholder="Type your message..."
+            className="flex-1 min-h-[40px] sm:min-h-[48px] max-h-48 resize-none bg-slate-800 border-slate-700 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 focus:ring-primary"
             rows={1}
           />
           
           {isRecording ? (
-             <Button variant="ghost" size="icon" onClick={handleStopRecording} className="h-12 w-12 rounded-full flex-shrink-0 bg-red-500/20 hover:bg-red-500/30">
-                <StopCircleIcon className="h-7 w-7 text-red-500" />
+             <Button variant="ghost" size="icon" onClick={handleStopRecording} className="h-10 w-10 sm:h-12 sm:w-12 rounded-full flex-shrink-0 bg-red-500/20 hover:bg-red-500/30">
+                <StopCircleIcon className="h-6 w-6 sm:h-7 sm:w-7 text-red-500" />
             </Button>
           ) : (
-            <Button variant="ghost" size="icon" onClick={handleStartRecording} className="h-12 w-12 rounded-full flex-shrink-0 hover:bg-primary/20">
-                <MicrophoneIcon className="h-6 w-6 text-primary" />
+            <Button variant="ghost" size="icon" onClick={handleStartRecording} className="h-10 w-10 sm:h-12 sm:w-12 rounded-full flex-shrink-0 hover:bg-primary/20">
+                <MicrophoneIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </Button>
           )}
 
-          <Button onClick={handleSend} disabled={!input.trim() || isAiThinking} size="icon" className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 flex-shrink-0">
-            <PaperAirplaneIcon className="h-6 w-6 text-primary-foreground" />
+          <Button onClick={handleSend} disabled={!input.trim() || isAiThinking} size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary hover:bg-primary/90 flex-shrink-0">
+            <PaperAirplaneIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
           </Button>
         </div>
       </footer>
