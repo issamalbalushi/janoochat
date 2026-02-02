@@ -167,7 +167,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
              <div className="h-8 w-8 rounded-full flex-shrink-0 text-accent flex items-center justify-center">
                 <SparklesIcon className="h-6 w-6 animate-pulse" />
              </div>
-             <div className="max-w-md lg:max-w-xl rounded-3xl p-4 flex flex-col bg-slate-800 rounded-bl-lg text-slate-400">
+             <div className="max-w-md lg:max-w-xl rounded-3xl p-3 flex flex-col bg-slate-800 rounded-bl-lg text-slate-400">
                 Thinking...
              </div>
            </div>
