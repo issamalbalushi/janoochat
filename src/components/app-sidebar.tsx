@@ -42,7 +42,7 @@ const NavItem = ({ href, icon: Icon, label }: { href: string; icon: React.Elemen
             <Icon className="h-5 w-5 md:h-6 md:w-6" />
           </Link>
         </TooltipTrigger>
-        <TooltipContent side="right" className="bg-slate-900 border-slate-700 text-foreground">
+        <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-foreground">
           <p>{label}</p>
         </TooltipContent>
       </Tooltip>
@@ -97,17 +97,19 @@ export function AppSidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-20 md:w-24 flex flex-col items-center py-6 bg-slate-900/30 backdrop-blur-xl border-r border-slate-800 z-20">
-      <Link href="/general">
-         <CipherSphereLogo />
-      </Link>
+    <header className="fixed top-0 left-0 w-full h-16 md:h-20 flex items-center justify-between px-4 md:px-6 bg-slate-900/30 backdrop-blur-xl border-b border-slate-800 z-20">
+      <div className="flex items-center gap-4">
+        <Link href="/general">
+           <CipherSphereLogo />
+        </Link>
 
-      <nav className="flex flex-col items-center gap-4 mt-10">
-        <NavItem href="/general" icon={ChatBubbleLeftRightIcon} label="General Chat" />
-        <NavItem href="/ai-chat" icon={SparklesIcon} label="AI Assistant" />
-      </nav>
+        <nav className="flex items-center gap-2">
+          <NavItem href="/general" icon={ChatBubbleLeftRightIcon} label="General Chat" />
+          <NavItem href="/ai-chat" icon={SparklesIcon} label="AI Assistant" />
+        </nav>
+      </div>
 
-      <div className="mt-auto flex flex-col items-center gap-4">
+      <div className="flex items-center gap-4">
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -132,7 +134,7 @@ export function AppSidebar() {
                 />
               </label>
             </TooltipTrigger>
-            <TooltipContent side="right" className="bg-slate-900 border-slate-700 text-foreground">
+            <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-foreground">
               <p className="font-semibold">{username}</p>
               <p className="text-xs text-muted-foreground">Click to change avatar</p>
             </TooltipContent>
@@ -149,12 +151,12 @@ export function AppSidebar() {
                 <ArrowLeftOnRectangleIcon className="h-5 w-5 md:h-6 md:w-6" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right" className="bg-slate-900 border-slate-700 text-foreground">
+            <TooltipContent side="bottom" className="bg-slate-900 border-slate-700 text-foreground">
               <p>Logout</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
-    </aside>
+    </header>
   );
 }

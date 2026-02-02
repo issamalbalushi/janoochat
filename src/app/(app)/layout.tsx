@@ -62,7 +62,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <AppSidebar />
-      <main className="pl-20 md:pl-24">
+      <main className="pt-16 md:pt-20">
         {children}
       </main>
     </div>
