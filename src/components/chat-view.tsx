@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -154,7 +153,7 @@ export function ChatView({ chatId, chatType, title }: ChatViewProps) {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-slate-950">
+    <div className="flex flex-col h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] bg-slate-950">
       <header className="flex-shrink-0 h-20 flex items-center px-4 sm:px-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-lg">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">{title}</h1>
       </header>
